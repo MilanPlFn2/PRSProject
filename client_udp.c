@@ -10,7 +10,7 @@
 
 #define PORT	 8080
 #define MAXLINE 1024
-#define PORT2	 8081
+
 
 // Driver code
 int main() {
@@ -65,7 +65,8 @@ int main() {
 		int sockfd2;
 		char buffer2[MAXLINE];	
 		char *hello2 = "SYN";
-	
+		int port2 =atoi(buffer);
+
 		struct sockaddr_in	 servaddr2;
 
 		// Creating socket file descriptor
@@ -78,7 +79,7 @@ int main() {
 	
 		// Filling server information
 		servaddr2.sin_family = AF_INET;
-		servaddr2.sin_port = htons(n);
+		servaddr2.sin_port = htons(port2);
 		servaddr2.sin_addr.s_addr = INADDR_ANY;
 		fgets(msg, MAXLINE, stdin);
 		hello2=msg;
@@ -87,7 +88,7 @@ int main() {
 			sizeof(servaddr2));
 		printf("%s message sent data.\n",hello2);
 			
-		n2 = recvfrom(sockfd, (char *)buffer2, MAXLINE,
+		n2 = recvfrom(sockfd2, (char *)buffer2, MAXLINE,
 					MSG_WAITALL, (struct sockaddr *) &servaddr2,
 					&len2);
 		buffer2[n2] = '\0';		
@@ -100,4 +101,3 @@ int main() {
 	close(sockfd);
 	return 0;
 }
-
