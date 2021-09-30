@@ -11,11 +11,12 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+
 #define SERVICE_PORT	21233
 
-#define BUFSIZE 1024
+#define BUFSIZE 24000
 #define DEBUG 1
-#define DATASIZE 1000
+#define DATASIZE 23900
 #define SEQNUMSIZE 4
 
 int close(int fildes);	
@@ -23,10 +24,13 @@ int close(int fildes);
 int
 main(int argc, char **argv)
 {
+
     if(argc != 2){
         perror("usage: ./upd-rec <file-path>");
         exit(1);
     }
+    
+
 	struct sockaddr_in myaddr;	/* our address */
 	struct sockaddr_in remaddr;	/* remote address */
 	socklen_t addrlen = sizeof(remaddr);		/* length of addresses */
@@ -183,5 +187,6 @@ main(int argc, char **argv)
     }
     fclose(fp);
     close(fd);
+    
 	/* never exits */
 }

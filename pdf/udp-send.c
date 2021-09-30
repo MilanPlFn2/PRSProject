@@ -14,11 +14,13 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/time.h>
+#include <unistd.h>
 #define SERVICE_PORT	21233
 
-#define BUFLEN 1024
+#define BUFLEN 24000
 #define DEBUG 1
-#define DATASIZE 1000
+#define DATASIZE 23900
 #define SEQNUMSIZE 4
 #define WINDOWSIZE 16
 #define WAITLIMIT 2
@@ -36,6 +38,9 @@ struct sentFrame{
 
 int main(int argc, char **argv)
 {
+	struct timeval tv1,tv2;
+    long long temps; 
+    gettimeofday(&tv1,NULL);
     if(argc != 4){
         perror("usage: ./upd-send <file-path> <file-name> <server-ip>");
         exit(1);
@@ -220,5 +225,8 @@ int main(int argc, char **argv)
 
 	close(fd);
     	fclose(fp);
+		gettimeofday(&tv2,NULL);
+   temps=(tv2.tv_sec-tv1.tv_sec);
+   printf("temps=%lld secondes\n",temps);
 	return 0;
 }
