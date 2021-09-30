@@ -94,15 +94,14 @@ int main() {
 				perror("fork");
 				return EXIT_FAILURE;
 			} else if (pid == 0){
-				n2 = recvfrom(sockfd2, (char *)buffer2, MAXLINE,
+				while (1)
+				{
+					n2 = recvfrom(sockfd2, (char *)buffer2, MAXLINE,
 					MSG_WAITALL, ( struct sockaddr *) &cliaddr2,
 					&len2);
-				buffer2[n2] = '\0';
-				printf("Client data : %s\n", buffer2);
-				sendto(sockfd, (const char *)hello2, strlen(hello2),
-					MSG_CONFIRM, (const struct sockaddr *) &cliaddr2,
-						len2);
-				printf("%s send data\n",hello2);
+					buffer2[n2] = '\0';
+					printf("Client data : %s\n", buffer2);
+				}	
 			}
 			fgets(msg, MAXLINE, stdin);
 		}else if (strncmp(buffer,"SYN",3)==0)
