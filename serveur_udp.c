@@ -12,8 +12,34 @@
 #define MAXLINE 1024
 #define PORT2	 8081
 
+void readFile( const char * filename ) {
+    int returnCode;
+    int count;
 
+    FILE * stream = fopen( filename, "r" );
+    if ( stream == NULL ) {
+        fprintf( stderr, "Cannot open file for reading\n" );
+        exit( -1 );
+    }
 
+    printf( "How many blocks to read: " );
+    scanf( "%d", &count );
+
+    {
+        char buffer[ MAXLINE * count + 1];
+        if ( count != fread( buffer, MAXLINE, count, stream ) ) {
+            fprintf( stderr, "Cannot read blocks in file\n" );
+        }
+        buffer[ MAXLINE * count ] = '\0';
+        printf( buffer );
+    }
+
+    returnCode = fclose( stream );
+    if ( returnCode == EOF ) {
+        fprintf( stderr, "Cannot close file\n" );
+        exit( -1 );
+    }
+}
 
 // Driver code
 int main() {
@@ -76,6 +102,7 @@ int main() {
 	int ret;
 	char msg[MAXLINE];
 	len = sizeof(cliaddr); //len is value/resuslt
+	len2 = sizeof(cliaddr2);
 	while(1){	
 		n = recvfrom(sockfd, (char *)buffer, MAXLINE,
 					MSG_WAITALL, ( struct sockaddr *) &cliaddr,
@@ -83,12 +110,7 @@ int main() {
 		buffer[n] = '\0';
 		printf("Client : %s\n", buffer);
 		ret = strncmp(buffer,"ACK",3);
-		if(ret==0){
-			hello="8081";
-			sendto(sockfd, (const char *)hello, strlen(hello),
-			MSG_CONFIRM, (const struct sockaddr *) &cliaddr,
-				len);
-			printf("%s send\n",hello);
+		if(ret==0){					
 			pid_t pid = fork();
 			if (pid == -1) {
 				// Il y a une erreur
@@ -102,17 +124,52 @@ int main() {
 					&len2);
 					buffer2[n2] = '\0';
 					printf("Client data : %s\n", buffer2);
+
+					int returnCode;
+					int count;
+
+					FILE * stream = fopen( buffer2, "r" );
+					if ( stream == NULL ) {
+						fprintf( stderr, "Cannot open file for reading\n" );
+						exit( -1 );
+					}
+					
+					while (! feof( stream )){
+						char buffer[ MAXLINE + 1];
+						if ( count != fread( buffer, MAXLINE, 1, stream ) ) {
+							fprintf( stderr, "Cannot read blocks in file\n" );
+						}
+						buffer[ MAXLINE * count ] = '\0';
+						sendto(sockfd2, buffer, strlen(buffer),
+						MSG_CONFIRM, (const struct sockaddr *) &cliaddr2,
+							len2);
+						printf("%s send\n",hello);						
+					}
+					returnCode = fclose( stream );
+							if ( returnCode == EOF ) {
+								fprintf( stderr, "Cannot close file\n" );
+								exit( -1 );
+							}
+			
+
+					
+					/* hello="Bonjour";
+					sendto(sockfd2, (const char *)hello, strlen(hello),
+						MSG_CONFIRM, (const struct sockaddr *) &cliaddr2,
+							len2);
+					printf("%s send\n",hello); */
 				}	
 			}
-			fgets(msg, MAXLINE, stdin);
+			
 		}else if (strncmp(buffer,"SYN",3)==0)
 		{
-			hello="SYN-ACK";
-		}
-		sendto(sockfd, (const char *)hello, strlen(hello),
+			hello="SYN-ACK8081";
+			sendto(sockfd, (const char *)hello, strlen(hello),
 			MSG_CONFIRM, (const struct sockaddr *) &cliaddr,
 				len);
-		printf("%s send\n",hello);
+			printf("%s send\n",hello);
+		}
+		
 		
 		
 	}
